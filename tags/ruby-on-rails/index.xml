@@ -15,7 +15,7 @@
       <pubDate>Fri, 21 Oct 2016 21:52:35 +0700</pubDate>
       
       <guid>http://quyetbui.info/phoenix-rails-commands/</guid>
-      <description>&lt;p&gt;Recently, I started trying with Elixir/Phoenix. There are many similar things between Ruby/Rails and Phoenix/Elixir. Here I started with some commands&lt;/p&gt;
+      <description>&lt;p&gt;Recently, I started trying with Elixir/Phoenix. There are many similar things between Ruby/Rails and Phoenix/Elixir. Here I started with some commands.&lt;/p&gt;
 
 &lt;p&gt;&lt;/p&gt;
 
@@ -79,6 +79,134 @@
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;</description>
+    </item>
+    
+    <item>
+      <title>Improve code quality of Rails app with Continuous Integration and some tools</title>
+      <link>http://quyetbui.info/improve-code-quanlity-rails-app/</link>
+      <pubDate>Fri, 21 Oct 2016 20:52:19 +0700</pubDate>
+      
+      <guid>http://quyetbui.info/improve-code-quanlity-rails-app/</guid>
+      <description>&lt;p&gt;In this post, I will introduce some tools that I believe can help your team improve/ensure code quality for your Ruby on Rails project and my experience using them.&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;p&gt;To use these tools, ideally you should use Continuous Integration service such as TravisCI, CircleCI&amp;hellip;Each team member should always work on a new git branch for a new feature, get the CI build green (passing) and doing code review when making a pull request to merge the code.&lt;/p&gt;
+
+&lt;p&gt;If your team already use &lt;a href=&#34;codeclimate.com&#34;&gt;CodeClimate&lt;/a&gt;, you don&amp;rsquo;t need to read this. Since these tools are actually just the engines under CodeClimate (and more than for example &lt;a href=&#34;https://github.com/troessner/reek&#34;&gt;Reek&lt;/a&gt;).&lt;/p&gt;
+
+&lt;h2 id=&#34;rubocop-https-github-com-bbatsov-rubocop&#34;&gt;&lt;a href=&#34;https://github.com/bbatsov/rubocop&#34;&gt;Rubocop&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt;In Ruby/Rails community coding style such as &lt;a href=&#34;https://github.com/bbatsov/ruby-style-guide&#34;&gt;ruby-style-guide&lt;/a&gt;, &lt;a href=&#34;https://github.com/bbatsov/rails-style-guide&#34;&gt;rails-style-guide&lt;/a&gt; are used widely. Generally it&amp;rsquo;s a rule that everyone in the team should follow these code conventions. Rubocop help checking for these rules automatically, so help the team maintain better coding style.&lt;/p&gt;
+
+&lt;p&gt;Some tips:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Rubocop support auto-correct for some cops so you can use&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;code&gt;rubocop --auto-correct&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;to automatically correct the issues. This feature is very helpful with minor coding style issues such as with indentations, spaces, empty lines&amp;hellip;However, you shoud review the changes since sometimes rubocop might change/delete some piece of code in unexpected way.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;If you use RSpec, &lt;a href=&#34;https://github.com/backus/rubocop-rspec&#34;&gt;https://github.com/backus/rubocop-rspec&lt;/a&gt; is also an addition tool for analysing your RSpec code&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;The default config for rubocop can be found &lt;a href=&#34;https://github.com/bbatsov/rubocop/blob/master/config&#34;&gt;here&lt;/a&gt;.
+Although it&amp;rsquo;s better if you can follow all the default config, but those rules are very strict and somewhat too hard to satisfy (for me) so you might want update the config by creating &lt;code&gt;.rubocop.yml&lt;/code&gt; file in your project and modify according to, for example:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;Rails:
+  Enabled: true
+    
+Metrics/AbcSize:
+  Max: 20
+    
+Metrics/MethodLength:
+  Exclude:
+    - &#39;db/migrate/*&#39;
+  Max: 10
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;For more information you can read the doc at &lt;a href=&#34;http://rubocop.readthedocs.io/&#34;&gt;http://rubocop.readthedocs.io/&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;rails-best-practices-https-github-com-railsbp-rails-best-practices&#34;&gt;&lt;a href=&#34;https://github.com/railsbp/rails_best_practices&#34;&gt;Rails best practices&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt;Rails community has a set of things called &lt;a href=&#34;rails-bestpractices.com&#34;&gt;best practices&lt;/a&gt;, &lt;a href=&#34;https://github.com/railsbp/rails_best_practices&#34;&gt;this gem&lt;/a&gt; will help you check some of those things automatically, for example it can suggest you to remove an unused method, add missing index to a foreign key column, point out a line of code that violates the law of demeter&amp;hellip;&lt;/p&gt;
+
+&lt;p&gt;Tips: Similar to Rubocop, you can also add a file &lt;code&gt;config/rails_best_practices.yml&lt;/code&gt; to disable some false positive checks.&lt;/p&gt;
+
+&lt;h2 id=&#34;brakeman-https-github-com-presidentbeef-brakeman&#34;&gt;&lt;a href=&#34;https://github.com/presidentbeef/brakeman&#34;&gt;Brakeman&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt;Brakeman is a tool to scan for security vulnerabilities in your code. It give false positive sometimes but in general it&amp;rsquo;s a very good tool and I highly recommended.&lt;/p&gt;
+
+&lt;p&gt;Tips: If you have a false positive or you understand about the issue and want to ignore, you can create &lt;code&gt;config/brakeman.ignore&lt;/code&gt; (by &lt;code&gt;brakeman -I&lt;/code&gt;)&lt;/p&gt;
+
+&lt;p&gt;For more information, brakeman&amp;rsquo;s website is at
+&lt;a href=&#34;http://brakemanscanner.org/&#34;&gt;http://brakemanscanner.org/&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;bundler-audit-https-github-com-rubysec-bundler-audit&#34;&gt;&lt;a href=&#34;https://github.com/rubysec/bundler-audit&#34;&gt;Bundler Audit&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt;Bundler audit is a gem that checks for vulnerable versions of gems and insecure gem sources.&lt;/p&gt;
+
+&lt;p&gt;Many developer are lazy to update gems and/or they are afraid that updating gems will break the system, as result, I saw many projects with very outdated version of gems, many with security issues. So I believe that it&amp;rsquo;s better to have &lt;code&gt;bundler-audit&lt;/code&gt; automatically scan for gem with issue and make the travis build failed. Developer will notice the problem and update gems.&lt;/p&gt;
+
+&lt;p&gt;I usually use this gem in the CI with the following command.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;bundle exec bundle-audit check --update&lt;/code&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;flay-https-github-com-seattlerb-flay&#34;&gt;&lt;a href=&#34;https://github.com/seattlerb/flay&#34;&gt;Flay&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt;Flay is a tool that help identify duplications in your code. CodeClimate also use this for their code duplication analysis. Generally this can be an &lt;em&gt;optional check&lt;/em&gt;, but making it&amp;rsquo;s as a required check in CI can help force developer more focus on refactoring to DRY their code to fix duplication issues.&lt;/p&gt;
+
+&lt;p&gt;To use Flay with CI, we can add a rake task (&lt;code&gt;lib/tasks/flay.rake&lt;/code&gt;)&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-ruby&#34;&gt;task :flay do
+  puts &#39;Checking for code duplication&#39;
+  output = `bundle exec flay --mass 40 app/`
+
+  if output.include? &#39;Similar code found&#39;
+    puts output
+    exit 1
+  end
+end
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;where &lt;code&gt;40&lt;/code&gt; is threshold for the mass, lower is better but you might want to change this value if you need.&lt;/p&gt;
+
+&lt;p&gt;In the CI enviroment, we can use &lt;code&gt;bundle exec rake flay&lt;/code&gt; to require checking for code duplication.&lt;/p&gt;
+
+&lt;h2 id=&#34;simplecov-https-github-com-colszowka-simplecov&#34;&gt;&lt;a href=&#34;https://github.com/colszowka/simplecov&#34;&gt;SimpleCov&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt;SimpleCov not only provides you a nicely report of the your test coverage (at &lt;code&gt;/coverage/index.html&lt;/code&gt;), it also helps you to ensure a good test coverage in your project. For example with the following setup:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# top of your rails_helper or spec_helper
+require &#39;simplecov&#39;
+SimpleCov.start &#39;rails&#39; do
+  minimum_coverage         95
+  minimum_coverage_by_file 80
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then if someone made pull request, that drop the coverage of the test suite to bellow 95% or that has a file with 80% of lines are tested, CI tool will fail the build even all tests are passed. A good team should aim for 100% for these value (it&amp;rsquo;s very hard, but you should do)&lt;/p&gt;
+
+&lt;p&gt;Tip: if you want to ignore the check for a file you can add &lt;code&gt;add_filter &amp;quot;/some/file&amp;quot;&lt;/code&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;what-s-your-ci-script&#34;&gt;What&amp;rsquo;s your CI script?&lt;/h2&gt;
+
+&lt;p&gt;Besides those tools above, linter such as &lt;a href=&#34;https://github.com/brigade/haml-lint&#34;&gt;haml-lint&lt;/a&gt; (if you are using HAML) or &lt;a href=&#34;eslint.org&#34;&gt;eslint&lt;/a&gt; are surely also helpful for ensuring quality of your codebase.&lt;/p&gt;
+
+&lt;p&gt;Just my personal preference, I would like to have this in CI script of every new Rails projects.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;- bundle exec bundle-audit check --update
+- bundle exec brakeman -Aqz
+- bundle exec rails_best_practices
+- bundle exec rake flay
+- bundle exec rubocop
+- bundle exec haml-lint app/views
+- bundle exec rspec
+&lt;/code&gt;&lt;/pre&gt;</description>
     </item>
     
   </channel>

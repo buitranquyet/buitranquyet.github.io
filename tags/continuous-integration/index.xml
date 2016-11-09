@@ -2,96 +2,12 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Quyet Bui</title>
-    <link>http://quyetbui.info/index.xml</link>
+    <link>http://quyetbui.info/tags/continuous-integration/index.xml</link>
     <description>Recent content on Quyet Bui</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-US</language>
     <copyright>All rights reserved - 2016</copyright>
-    <lastBuildDate>Fri, 21 Oct 2016 21:52:35 +0700</lastBuildDate>
-    <atom:link href="http://quyetbui.info/index.xml" rel="self" type="application/rss+xml" />
-    
-    <item>
-      <title>About me</title>
-      <link>http://quyetbui.info/about/</link>
-      <pubDate>Fri, 21 Oct 2016 21:52:35 +0700</pubDate>
-      
-      <guid>http://quyetbui.info/about/</guid>
-      <description>&lt;p&gt;Hi all,
-I am Quyet Bui, a Ruby on Rails developer from Vietnam. I have background in Electrical Engineering with a masters degree from the University of Notre Dame in the States, however, I am more interested working as a developer&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Phoenix and Rails equivalent commands</title>
-      <link>http://quyetbui.info/phoenix-rails-commands/</link>
-      <pubDate>Fri, 21 Oct 2016 21:52:35 +0700</pubDate>
-      
-      <guid>http://quyetbui.info/phoenix-rails-commands/</guid>
-      <description>&lt;p&gt;Recently, I started trying with Elixir/Phoenix. There are many similar things between Ruby/Rails and Phoenix/Elixir. Here I started with some commands.&lt;/p&gt;
-
-&lt;p&gt;&lt;/p&gt;
-
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;Elixir/Phoenix&lt;/th&gt;
-&lt;th&gt;Ruby/Rails&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td&gt;iex&lt;/td&gt;
-&lt;td&gt;irb&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td&gt;mix deps.get&lt;/td&gt;
-&lt;td&gt;bundle install&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td&gt;mix phoenix.server&lt;/td&gt;
-&lt;td&gt;rails server&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td&gt;iex -S mix phoenix.server&lt;/td&gt;
-&lt;td&gt;rails console&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td&gt;mix ecto.migrate&lt;/td&gt;
-&lt;td&gt;rake db:migrate&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td&gt;mix ecto.create&lt;/td&gt;
-&lt;td&gt;rake db:create&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td&gt;mix ecto.rollback&lt;/td&gt;
-&lt;td&gt;rake db:migrate&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td&gt;mix phoenix.gen.secret&lt;/td&gt;
-&lt;td&gt;rake secret&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td&gt;mix phoenix.gen.model&lt;/td&gt;
-&lt;td&gt;rails generate model&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td&gt;mix phoenix.gen.html&lt;/td&gt;
-&lt;td&gt;rails g scaffold&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;</description>
-    </item>
+    <atom:link href="http://quyetbui.info/tags/continuous-integration/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Improve code quality of Rails app with Continuous Integration and some tools</title>

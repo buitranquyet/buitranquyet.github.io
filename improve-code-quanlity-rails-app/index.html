@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  	<meta property="og:title" content=" Improve code quality of Rails app with Continuous Integration and some tools &middot;  Quyet Bui" />
+  	<meta property="og:site_name" content="Quyet Bui" />
+  	<meta property="og:url" content="http://quyetbui.info/improve-code-quanlity-rails-app/" />
+
+    
+  	<meta property="og:type" content="article" />
+
+    <meta property="og:article:published_time" content="2016-10-21T20:52:19&#43;07:00" />
+
+    
+    <meta property="og:article:tag" content="Ruby on Rails" />
+    
+    <meta property="og:article:tag" content="Continuous Integration" />
+    
+    
+
+  <title>
+     Improve code quality of Rails app with Continuous Integration and some tools &middot;  Quyet Bui
+  </title>
+
+    <meta name="description" content="Ruby on Rails developer." />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="http://quyetbui.info/images/favicon.ico">
+	  <link rel="apple-touch-icon" href="http://quyetbui.info/images/apple-touch-icon.png" />
+
+    <link rel="stylesheet" type="text/css" href="http://quyetbui.info/css/screen.css" />
+    <link rel="stylesheet" type="text/css" href="http://quyetbui.info/css/nav.css" />
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400|Inconsolata" />
+
+
+    
+      
+          <link href="http://quyetbui.info/index.xml" rel="alternate" type="application/rss+xml" title="Quyet Bui" />
+      
+      
+    
+    <meta name="generator" content="Hugo 0.17" />
+
+    <link rel="canonical" href="http://quyetbui.info/improve-code-quanlity-rails-app/" />
+
+    
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-xxx', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+    
+
+    
+</head>
+<body class="nav-closed">
+
+  <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        
+        
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="/">Blog</a>
+            </li>
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="/about">About</a>
+            </li>
+        
+            <h3>Follow me</h3>
+            <li class="nav-opened" role="presentation">
+            	<a href="https://github.com/buitranquyet">Github</a>
+            </li>
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="https://twitter.com/buitranquyet">Twitter</a>
+            </li>
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="https://vn.linkedin.com/in/quyet-bui-b5a1496a">Linkedin</a>
+            </li>
+        
+    </ul>
+    
+    
+    <a class="subscribe-button icon-feed" href="http://quyetbui.info/index.xml">Subscribe</a>
+    
+</div>
+<span class="nav-cover"></span>
+
+
+ <div class="site-wrapper">
+
+
+
+
+<header class="main-header post-head no-cover">
+  <nav class="main-nav clearfix">
+
+
+  
+      <a class="menu-button" href="#"><span class="burger">&#9776;</span><span class="word">Menu</span></a>
+  
+  </nav>
+</header>
+
+
+
+<main class="content" role="main">
+
+  <article class="post post">
+
+    <header class="post-header">
+        <h1 class="post-title">Improve code quality of Rails app with Continuous Integration and some tools</h1>
+        <small></small>
+
+        <section class="post-meta">
+        
+          <time class="post-date" datetime="2016-10-21T20:52:19&#43;07:00">
+            Oct 21, 2016
+          </time>
+        
+         
+          <span class="post-tag small"><a href="http://quyetbui.info/tags/ruby-on-rails/">#Ruby on Rails</a></span>
+         
+          <span class="post-tag small"><a href="http://quyetbui.info/tags/continuous-integration/">#Continuous Integration</a></span>
+         
+        </section>
+    </header>
+
+    <section class="post-content">
+      <p>In this post, I will introduce some tools that I believe can help your team improve/ensure code quality for your Ruby on Rails project and my experience using them.</p>
+
+<p></p>
+
+<p>To use these tools, ideally you should use Continuous Integration service such as TravisCI, CircleCI&hellip;Each team member should always work on a new git branch for a new feature, get the CI build green (passing) and doing code review when making a pull request to merge the code.</p>
+
+<p>If your team already use <a href="codeclimate.com">CodeClimate</a>, you don&rsquo;t need to read this. Since these tools are actually just the engines under CodeClimate (and more than for example <a href="https://github.com/troessner/reek">Reek</a>).</p>
+
+<h2 id="rubocop-https-github-com-bbatsov-rubocop"><a href="https://github.com/bbatsov/rubocop">Rubocop</a></h2>
+
+<p>In Ruby/Rails community coding style such as <a href="https://github.com/bbatsov/ruby-style-guide">ruby-style-guide</a>, <a href="https://github.com/bbatsov/rails-style-guide">rails-style-guide</a> are used widely. Generally it&rsquo;s a rule that everyone in the team should follow these code conventions. Rubocop help checking for these rules automatically, so help the team maintain better coding style.</p>
+
+<p>Some tips:</p>
+
+<ul>
+<li>Rubocop support auto-correct for some cops so you can use</li>
+</ul>
+
+<p><code>rubocop --auto-correct</code></p>
+
+<p>to automatically correct the issues. This feature is very helpful with minor coding style issues such as with indentations, spaces, empty lines&hellip;However, you shoud review the changes since sometimes rubocop might change/delete some piece of code in unexpected way.</p>
+
+<ul>
+<li><p>If you use RSpec, <a href="https://github.com/backus/rubocop-rspec">https://github.com/backus/rubocop-rspec</a> is also an addition tool for analysing your RSpec code</p></li>
+
+<li><p>The default config for rubocop can be found <a href="https://github.com/bbatsov/rubocop/blob/master/config">here</a>.
+Although it&rsquo;s better if you can follow all the default config, but those rules are very strict and somewhat too hard to satisfy (for me) so you might want update the config by creating <code>.rubocop.yml</code> file in your project and modify according to, for example:</p>
+
+<pre><code class="language-yaml">Rails:
+  Enabled: true
+    
+Metrics/AbcSize:
+  Max: 20
+    
+Metrics/MethodLength:
+  Exclude:
+    - 'db/migrate/*'
+  Max: 10
+</code></pre></li>
+</ul>
+
+<p>For more information you can read the doc at <a href="http://rubocop.readthedocs.io/">http://rubocop.readthedocs.io/</a></p>
+
+<h2 id="rails-best-practices-https-github-com-railsbp-rails-best-practices"><a href="https://github.com/railsbp/rails_best_practices">Rails best practices</a></h2>
+
+<p>Rails community has a set of things called <a href="rails-bestpractices.com">best practices</a>, <a href="https://github.com/railsbp/rails_best_practices">this gem</a> will help you check some of those things automatically, for example it can suggest you to remove an unused method, add missing index to a foreign key column, point out a line of code that violates the law of demeter&hellip;</p>
+
+<p>Tips: Similar to Rubocop, you can also add a file <code>config/rails_best_practices.yml</code> to disable some false positive checks.</p>
+
+<h2 id="brakeman-https-github-com-presidentbeef-brakeman"><a href="https://github.com/presidentbeef/brakeman">Brakeman</a></h2>
+
+<p>Brakeman is a tool to scan for security vulnerabilities in your code. It give false positive sometimes but in general it&rsquo;s a very good tool and I highly recommended.</p>
+
+<p>Tips: If you have a false positive or you understand about the issue and want to ignore, you can create <code>config/brakeman.ignore</code> (by <code>brakeman -I</code>)</p>
+
+<p>For more information, brakeman&rsquo;s website is at
+<a href="http://brakemanscanner.org/">http://brakemanscanner.org/</a></p>
+
+<h2 id="bundler-audit-https-github-com-rubysec-bundler-audit"><a href="https://github.com/rubysec/bundler-audit">Bundler Audit</a></h2>
+
+<p>Bundler audit is a gem that checks for vulnerable versions of gems and insecure gem sources.</p>
+
+<p>Many developer are lazy to update gems and/or they are afraid that updating gems will break the system, as result, I saw many projects with very outdated version of gems, many with security issues. So I believe that it&rsquo;s better to have <code>bundler-audit</code> automatically scan for gem with issue and make the travis build failed. Developer will notice the problem and update gems.</p>
+
+<p>I usually use this gem in the CI with the following command.</p>
+
+<p><code>bundle exec bundle-audit check --update</code></p>
+
+<h2 id="flay-https-github-com-seattlerb-flay"><a href="https://github.com/seattlerb/flay">Flay</a></h2>
+
+<p>Flay is a tool that help identify duplications in your code. CodeClimate also use this for their code duplication analysis. Generally this can be an <em>optional check</em>, but making it&rsquo;s as a required check in CI can help force developer more focus on refactoring to DRY their code to fix duplication issues.</p>
+
+<p>To use Flay with CI, we can add a rake task (<code>lib/tasks/flay.rake</code>)</p>
+
+<pre><code class="language-ruby">task :flay do
+  puts 'Checking for code duplication'
+  output = `bundle exec flay --mass 40 app/`
+
+  if output.include? 'Similar code found'
+    puts output
+    exit 1
+  end
+end
+
+</code></pre>
+
+<p>where <code>40</code> is threshold for the mass, lower is better but you might want to change this value if you need.</p>
+
+<p>In the CI enviroment, we can use <code>bundle exec rake flay</code> to require checking for code duplication.</p>
+
+<h2 id="simplecov-https-github-com-colszowka-simplecov"><a href="https://github.com/colszowka/simplecov">SimpleCov</a></h2>
+
+<p>SimpleCov not only provides you a nicely report of the your test coverage (at <code>/coverage/index.html</code>), it also helps you to ensure a good test coverage in your project. For example with the following setup:</p>
+
+<pre><code># top of your rails_helper or spec_helper
+require 'simplecov'
+SimpleCov.start 'rails' do
+  minimum_coverage         95
+  minimum_coverage_by_file 80
+end
+</code></pre>
+
+<p>Then if someone made pull request, that drop the coverage of the test suite to bellow 95% or that has a file with 80% of lines are tested, CI tool will fail the build even all tests are passed. A good team should aim for 100% for these value (it&rsquo;s very hard, but you should do)</p>
+
+<p>Tip: if you want to ignore the check for a file you can add <code>add_filter &quot;/some/file&quot;</code></p>
+
+<h2 id="what-s-your-ci-script">What&rsquo;s your CI script?</h2>
+
+<p>Besides those tools above, linter such as <a href="https://github.com/brigade/haml-lint">haml-lint</a> (if you are using HAML) or <a href="eslint.org">eslint</a> are surely also helpful for ensuring quality of your codebase.</p>
+
+<p>Just my personal preference, I would like to have this in CI script of every new Rails projects.</p>
+
+<pre><code class="language-yaml">- bundle exec bundle-audit check --update
+- bundle exec brakeman -Aqz
+- bundle exec rails_best_practices
+- bundle exec rake flay
+- bundle exec rubocop
+- bundle exec haml-lint app/views
+- bundle exec rspec
+</code></pre>
+    </section>
+
+
+  <footer class="post-footer">
+
+
+    
+    <figure class="author-image">
+        <a class="img" href="http://quyetbui.info/" style="background-image: url(http://quyetbui.info/quyet.jpg)"><span class="hidden">Quyet Bui's Picture</span></a>
+    </figure>
+    
+
+    
+
+
+
+
+
+<section class="author">
+  <h4><a href="http://quyetbui.info/">Quyet Bui</a></h4>
+  
+  <p>Ruby on Rails developer</p>
+  
+  <div class="author-meta">
+    <span class="author-location icon-location">Thanh Hoa, Vietnam</span>
+    <span class="author-link icon-link"><a href="http://quyetbui.info">http://quyetbui.info</a></span>
+  </div>
+</section>
+
+
+
+    
+<section class="share">
+  <h4>Share this post</h4>
+  <a class="icon-twitter" style="font-size: 1.4em" href="https://twitter.com/share?text=Improve%20code%20quality%20of%20Rails%20app%20with%20Continuous%20Integration%20and%20some%20tools&nbsp;-&nbsp;Quyet%20Bui&amp;url=http%3a%2f%2fquyetbui.info%2fimprove-code-quanlity-rails-app%2f"
+      onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+      <span class="hidden">Twitter</span>
+  </a>
+  <a class="icon-facebook" style="font-size: 1.4em" href="https://www.facebook.com/sharer/sharer.php?u=http%3a%2f%2fquyetbui.info%2fimprove-code-quanlity-rails-app%2f"
+      onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+      <span class="hidden">Facebook</span>
+  </a>
+  <a class="icon-pinterest" style="font-size: 1.4em" href="http://pinterest.com/pin/create/button/?url=http%3a%2f%2fquyetbui.info%2fimprove-code-quanlity-rails-app%2f&amp;description=Improve%20code%20quality%20of%20Rails%20app%20with%20Continuous%20Integration%20and%20some%20tools"
+      onclick="window.open(this.href, 'pinterest-share','width=580,height=296');return false;">
+      <span class="hidden">Pinterest</span>
+  </a>
+  <a class="icon-google-plus" style="font-size: 1.4em" href="https://plus.google.com/share?url=http%3a%2f%2fquyetbui.info%2fimprove-code-quanlity-rails-app%2f"
+     onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+      <span class="hidden">Google+</span>
+  </a>
+</section>
+
+
+
+    
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+  var disqus_shortname = 'devniemdamme';
+  var disqus_url = 'http:\/\/quyetbui.info\/improve-code-quanlity-rails-app\/';
+  (function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+
+
+  </footer>
+</article>
+
+</main>
+    <footer class="site-footer clearfix">
+        <section class="copyright"><a href="">Quyet Bui</a> All rights reserved - 2016</section>
+        
+        <section class="poweredby">Proudly generated by <a class="icon-hugo" href="http://gohugo.io">HUGO</a>, with <a class="icon-theme" href="https://github.com/vjeantet/hugo-theme-casper">Casper</a> theme</section>
+        
+    </footer>
+    </div>
+    <script type="text/javascript" src="http://quyetbui.info/js/jquery.js"></script>
+    <script type="text/javascript" src="http://quyetbui.info/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="http://quyetbui.info/js/index.js"></script>
+    
+</body>
+</html>
+
