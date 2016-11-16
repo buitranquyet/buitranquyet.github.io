@@ -10,6 +10,107 @@
     <atom:link href="http://quyetbui.info/tags/ruby-on-rails/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>My notes on Rails performance</title>
+      <link>http://quyetbui.info/note-on-rails-performance/</link>
+      <pubDate>Wed, 16 Nov 2016 19:42:28 +0700</pubDate>
+      
+      <guid>http://quyetbui.info/note-on-rails-performance/</guid>
+      <description>&lt;p&gt;This post is my notes about improving performance of Ruby on Rails app. For caching/N+1&amp;hellip;, I am just providing general information, not too much details. Nginx/Rails Server(Unicorn/Puma) is related to performance but also other story.&lt;/p&gt;
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;caching&#34;&gt;Caching&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Caching is the most effective way to improve performance of your app. You should try to cache as much as possible. Technically, implement caching in Rails is quite easy but strategry for invalidating the cache sometimes can be tricky, just like a saying: &lt;em&gt;&amp;ldquo;There are only two hard things in Computer Science: cache invalidation and naming things&amp;rdquo;&lt;/em&gt;.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;From my experience, I usually use &lt;code&gt;id&lt;/code&gt; and &lt;code&gt;updated_at&lt;/code&gt; in cache key and &lt;code&gt;touch&lt;/code&gt; the object when we need to expire the cache. May be &lt;code&gt;.touch&lt;/code&gt; manually in a specific context, in a &lt;code&gt;callback&lt;/code&gt; or with the association option &lt;code&gt;belongs_to :some_model, touch: true&lt;/code&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;n-1&#34;&gt;N+1&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;As its name said, it&amp;rsquo;s expected to make one query but N other additional queries are fired instead, so your database will be flooded with queries and you app will be slow. N+1 is a very common performance issue. To fix N+1 issue, we usually use &lt;code&gt;eager loading&lt;/code&gt; technique.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;To eliminating N+1 issue, I see &lt;a href=&#34;https://github.com/flyerhzm/bullet&#34;&gt;&lt;code&gt;bullet&lt;/code&gt;&lt;/a&gt; gem is the best tool. We can configure &lt;code&gt;bullet&lt;/code&gt; to notice us the problem via many ways, for example a javascript alert, a footer at the bottom of the page, in the log&amp;hellip;&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;But please note that, although N+1 is usually bad, but it&amp;rsquo;s not always true. For huge tables and complicated relationship, fixing N+1 with &lt;code&gt;eager loading&lt;/code&gt; can make less query but it&amp;rsquo;s complex and slow query. Also if we can do caching properly, the N+1 code but with cache might give better performance than a none N+1 code.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;ruby-is-usually-slower-than-sql&#34;&gt;Ruby is usually slower than SQL.&lt;/h2&gt;
+
+&lt;p&gt;I know that you are a Ruby developer and you can solve the complex issues in a neat way with Ruby. But actually, in a Ruby on Rails app, you should try to do the things in SQL instead of Ruby. SQL is usually faster than Ruby. Bellow is few very simple examples:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;If you want to calculate a sum: &lt;code&gt;Deal.active.sum(&amp;amp;:quantity)&lt;/code&gt; is much slower than &lt;code&gt;Deal.active.sum(:quantity)&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Explain: the first one will load all the active &lt;code&gt;deals&lt;/code&gt; into Rails model and then calculate the sum on the array of Ruby objects, meanwhile in the later SQL do the calculation part and just give the result to Rails&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Or another example: &lt;code&gt;Deal.pluck(:user_id).uniq&lt;/code&gt; is much slower than &lt;code&gt;Deal.uniq.pluck(:user_id)&lt;/code&gt;, although they look very similar.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Explain: the first one load all &lt;code&gt;user_id&lt;/code&gt; to Ruby array and Ruby do unique in the array. Meanwhile the later, SQL do a &lt;code&gt;SELECT DISTINCT&lt;/code&gt; command to find &lt;code&gt;user_id&lt;/code&gt;, Ruby just load results into an array.&lt;/p&gt;
+
+&lt;h2 id=&#34;db-index&#34;&gt;DB index&lt;/h2&gt;
+
+&lt;p&gt;Adding index properly will help you querying data much faster. A simple rule is you should add index to all the foreign keys (&lt;code&gt;something_id&lt;/code&gt; field) and if you have &lt;code&gt;.where(column_name: ...)&lt;/code&gt; then you should add index to &lt;code&gt;column_name&lt;/code&gt;&amp;hellip;
+However, it&amp;rsquo;s a trade off, you should understand with indexes, your DB will take more diskspace and also the speed of &lt;code&gt;insert&lt;/code&gt; command will be decreased. So, read faster but more disk space + write slower.&lt;/p&gt;
+
+&lt;h2 id=&#34;memoization&#34;&gt;Memoization:&lt;/h2&gt;
+
+&lt;p&gt;If you have a helper method in controller:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-ruby&#34;&gt;def current_account
+  Account.find_by(subdomain: subdomain)
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;and you call &lt;code&gt;current_account.something&lt;/code&gt; multiple times in the view, then SQL query for loading account will be fired many times. SQL query will be cached so later queries are very very fast. But it&amp;rsquo;s better not having those. To avoid those extra SQL queries, you can do a &lt;code&gt;memoization&lt;/code&gt; here:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-ruby&#34;&gt;def current_account
+  @current_account ||= Account.find_by(subdomain: subdomain)
+end
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;only-select-what-you-need&#34;&gt;Only select what you need&lt;/h2&gt;
+
+&lt;p&gt;For example, a &lt;code&gt;User&lt;/code&gt; model have many fields (bio, occupation&amp;hellip;), but for a view you just need name/email). Usually you do:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt; # in controller:
+ @users = User.where(...).page(param[:page]).per(params[:per])
+ 
+ # in the view
+ - @users.each do |user|
+ ... user.name
+ ... user.email
+  
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This is very common but actually you loaded all fields of users from SQL to Rails so it takes more memory and also more information need to transfer from your database server (i.e. RDS) to your rails server (i.e. EC2).
+In this case, since you only need &lt;code&gt;name&lt;/code&gt; and &lt;code&gt;email&lt;/code&gt;, it&amp;rsquo;s better to write:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;@users = User.select(:name, :email).where(...)...&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Just a small gain, but it&amp;rsquo;s still better&lt;/p&gt;
+
+&lt;h2 id=&#34;tools&#34;&gt;Tools:&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Personally, I see &lt;code&gt;NewRelic&lt;/code&gt; is the most valuable tool for improving performance of Rails app. In the production environment, they provide many charts with many useful information that you should spend times to analyze. At the development environment, you can visit &lt;code&gt;http://localhost:3000/newrelic&lt;/code&gt; to start profiling and see report of SQL queries.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Besides &lt;code&gt;bullet&lt;/code&gt; and NewRelic some other tools that might be useful for profiling your Rails/Ruby app.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/MiniProfiler/rack-mini-profiler&#34;&gt;https://github.com/MiniProfiler/rack-mini-profiler&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dejan/rails_panel&#34;&gt;https://github.com/dejan/rails_panel&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/ruby-prof/ruby-prof&#34;&gt;https://github.com/ruby-prof/ruby-prof&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+    <item>
       <title>Improve code quality of Rails app with Continuous Integration and some tools</title>
       <link>http://quyetbui.info/improve-code-quanlity-rails-app/</link>
       <pubDate>Wed, 09 Nov 2016 20:52:19 +0700</pubDate>

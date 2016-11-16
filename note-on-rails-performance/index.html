@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  	<meta property="og:title" content=" My notes on Rails performance &middot;  Quyet Bui" />
+  	<meta property="og:site_name" content="Quyet Bui" />
+  	<meta property="og:url" content="http://quyetbui.info/note-on-rails-performance/" />
+
+    
+  	<meta property="og:type" content="article" />
+
+    <meta property="og:article:published_time" content="2016-11-16T19:42:28&#43;07:00" />
+
+    
+    <meta property="og:article:tag" content="Ruby on Rails" />
+    
+    <meta property="og:article:tag" content="Performance" />
+    
+    <meta property="og:article:tag" content="Tricks &amp; Tips" />
+    
+    
+
+  <title>
+     My notes on Rails performance &middot;  Quyet Bui
+  </title>
+
+    <meta name="description" content="Ruby on Rails developer." />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="http://quyetbui.info/images/favicon.ico">
+	  <link rel="apple-touch-icon" href="http://quyetbui.info/images/apple-touch-icon.png" />
+
+    <link rel="stylesheet" type="text/css" href="http://quyetbui.info/css/screen.css" />
+    <link rel="stylesheet" type="text/css" href="http://quyetbui.info/css/nav.css" />
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400|Inconsolata" />
+
+
+    
+      
+          <link href="http://quyetbui.info/index.xml" rel="alternate" type="application/rss+xml" title="Quyet Bui" />
+      
+      
+    
+    <meta name="generator" content="Hugo 0.17" />
+
+    <link rel="canonical" href="http://quyetbui.info/note-on-rails-performance/" />
+
+    
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-xxx', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+    
+
+    
+</head>
+<body class="nav-closed">
+
+  <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        
+        
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="/">Blog</a>
+            </li>
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="/about">About</a>
+            </li>
+        
+            <h3>Follow me</h3>
+            <li class="nav-opened" role="presentation">
+            	<a href="https://github.com/buitranquyet">Github</a>
+            </li>
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="https://twitter.com/buitranquyet">Twitter</a>
+            </li>
+        
+            
+            <li class="nav-opened" role="presentation">
+            	<a href="https://vn.linkedin.com/in/quyet-bui-b5a1496a">Linkedin</a>
+            </li>
+        
+    </ul>
+    
+    
+    <a class="subscribe-button icon-feed" href="http://quyetbui.info/index.xml">Subscribe</a>
+    
+</div>
+<span class="nav-cover"></span>
+
+
+ <div class="site-wrapper">
+
+
+
+
+<header class="main-header post-head no-cover">
+  <nav class="main-nav clearfix">
+
+
+  
+      <a class="menu-button" href="#"><span class="burger">&#9776;</span><span class="word">Menu</span></a>
+  
+  </nav>
+</header>
+
+
+
+<main class="content" role="main">
+
+  <article class="post post">
+
+    <header class="post-header">
+        <h1 class="post-title">My notes on Rails performance</h1>
+        <small></small>
+
+        <section class="post-meta">
+        
+          <time class="post-date" datetime="2016-11-16T19:42:28&#43;07:00">
+            Nov 16, 2016
+          </time>
+        
+         
+          <span class="post-tag small"><a href="http://quyetbui.info/tags/ruby-on-rails/">#Ruby on Rails</a></span>
+         
+          <span class="post-tag small"><a href="http://quyetbui.info/tags/performance/">#Performance</a></span>
+         
+          <span class="post-tag small"><a href="http://quyetbui.info/tags/tricks--tips/">#Tricks &amp; Tips</a></span>
+         
+        </section>
+    </header>
+
+    <section class="post-content">
+      <p>This post is my notes about improving performance of Ruby on Rails app. For caching/N+1&hellip;, I am just providing general information, not too much details. Nginx/Rails Server(Unicorn/Puma) is related to performance but also other story.</p>
+
+<p></p>
+
+<h2 id="caching">Caching</h2>
+
+<ul>
+<li><p>Caching is the most effective way to improve performance of your app. You should try to cache as much as possible. Technically, implement caching in Rails is quite easy but strategry for invalidating the cache sometimes can be tricky, just like a saying: <em>&ldquo;There are only two hard things in Computer Science: cache invalidation and naming things&rdquo;</em>.</p></li>
+
+<li><p>From my experience, I usually use <code>id</code> and <code>updated_at</code> in cache key and <code>touch</code> the object when we need to expire the cache. May be <code>.touch</code> manually in a specific context, in a <code>callback</code> or with the association option <code>belongs_to :some_model, touch: true</code></p></li>
+</ul>
+
+<h2 id="n-1">N+1</h2>
+
+<ul>
+<li><p>As its name said, it&rsquo;s expected to make one query but N other additional queries are fired instead, so your database will be flooded with queries and you app will be slow. N+1 is a very common performance issue. To fix N+1 issue, we usually use <code>eager loading</code> technique.</p></li>
+
+<li><p>To eliminating N+1 issue, I see <a href="https://github.com/flyerhzm/bullet"><code>bullet</code></a> gem is the best tool. We can configure <code>bullet</code> to notice us the problem via many ways, for example a javascript alert, a footer at the bottom of the page, in the log&hellip;</p></li>
+
+<li><p>But please note that, although N+1 is usually bad, but it&rsquo;s not always true. For huge tables and complicated relationship, fixing N+1 with <code>eager loading</code> can make less query but it&rsquo;s complex and slow query. Also if we can do caching properly, the N+1 code but with cache might give better performance than a none N+1 code.</p></li>
+</ul>
+
+<h2 id="ruby-is-usually-slower-than-sql">Ruby is usually slower than SQL.</h2>
+
+<p>I know that you are a Ruby developer and you can solve the complex issues in a neat way with Ruby. But actually, in a Ruby on Rails app, you should try to do the things in SQL instead of Ruby. SQL is usually faster than Ruby. Bellow is few very simple examples:</p>
+
+<ul>
+<li>If you want to calculate a sum: <code>Deal.active.sum(&amp;:quantity)</code> is much slower than <code>Deal.active.sum(:quantity)</code></li>
+</ul>
+
+<p>Explain: the first one will load all the active <code>deals</code> into Rails model and then calculate the sum on the array of Ruby objects, meanwhile in the later SQL do the calculation part and just give the result to Rails</p>
+
+<ul>
+<li>Or another example: <code>Deal.pluck(:user_id).uniq</code> is much slower than <code>Deal.uniq.pluck(:user_id)</code>, although they look very similar.</li>
+</ul>
+
+<p>Explain: the first one load all <code>user_id</code> to Ruby array and Ruby do unique in the array. Meanwhile the later, SQL do a <code>SELECT DISTINCT</code> command to find <code>user_id</code>, Ruby just load results into an array.</p>
+
+<h2 id="db-index">DB index</h2>
+
+<p>Adding index properly will help you querying data much faster. A simple rule is you should add index to all the foreign keys (<code>something_id</code> field) and if you have <code>.where(column_name: ...)</code> then you should add index to <code>column_name</code>&hellip;
+However, it&rsquo;s a trade off, you should understand with indexes, your DB will take more diskspace and also the speed of <code>insert</code> command will be decreased. So, read faster but more disk space + write slower.</p>
+
+<h2 id="memoization">Memoization:</h2>
+
+<p>If you have a helper method in controller:</p>
+
+<pre><code class="language-ruby">def current_account
+  Account.find_by(subdomain: subdomain)
+end
+</code></pre>
+
+<p>and you call <code>current_account.something</code> multiple times in the view, then SQL query for loading account will be fired many times. SQL query will be cached so later queries are very very fast. But it&rsquo;s better not having those. To avoid those extra SQL queries, you can do a <code>memoization</code> here:</p>
+
+<pre><code class="language-ruby">def current_account
+  @current_account ||= Account.find_by(subdomain: subdomain)
+end
+</code></pre>
+
+<h2 id="only-select-what-you-need">Only select what you need</h2>
+
+<p>For example, a <code>User</code> model have many fields (bio, occupation&hellip;), but for a view you just need name/email). Usually you do:</p>
+
+<pre><code> # in controller:
+ @users = User.where(...).page(param[:page]).per(params[:per])
+ 
+ # in the view
+ - @users.each do |user|
+ ... user.name
+ ... user.email
+  
+</code></pre>
+
+<p>This is very common but actually you loaded all fields of users from SQL to Rails so it takes more memory and also more information need to transfer from your database server (i.e. RDS) to your rails server (i.e. EC2).
+In this case, since you only need <code>name</code> and <code>email</code>, it&rsquo;s better to write:</p>
+
+<p><code>@users = User.select(:name, :email).where(...)...</code></p>
+
+<p>Just a small gain, but it&rsquo;s still better</p>
+
+<h2 id="tools">Tools:</h2>
+
+<ul>
+<li><p>Personally, I see <code>NewRelic</code> is the most valuable tool for improving performance of Rails app. In the production environment, they provide many charts with many useful information that you should spend times to analyze. At the development environment, you can visit <code>http://localhost:3000/newrelic</code> to start profiling and see report of SQL queries.</p></li>
+
+<li><p>Besides <code>bullet</code> and NewRelic some other tools that might be useful for profiling your Rails/Ruby app.</p>
+
+<ul>
+<li><a href="https://github.com/MiniProfiler/rack-mini-profiler">https://github.com/MiniProfiler/rack-mini-profiler</a></li>
+<li><a href="https://github.com/dejan/rails_panel">https://github.com/dejan/rails_panel</a></li>
+<li><a href="https://github.com/ruby-prof/ruby-prof">https://github.com/ruby-prof/ruby-prof</a></li>
+</ul></li>
+</ul>
+    </section>
+
+
+  <footer class="post-footer">
+
+
+    
+    <figure class="author-image">
+        <a class="img" href="http://quyetbui.info/" style="background-image: url(http://quyetbui.info/quyet.jpg)"><span class="hidden">Quyet Bui's Picture</span></a>
+    </figure>
+    
+
+    
+
+
+
+
+
+<section class="author">
+  <h4><a href="http://quyetbui.info/">Quyet Bui</a></h4>
+  
+  <p>Ruby on Rails developer</p>
+  
+  <div class="author-meta">
+    <span class="author-location icon-location">Thanh Hoa, Vietnam</span>
+    <span class="author-link icon-link"><a href="http://quyetbui.info">http://quyetbui.info</a></span>
+  </div>
+</section>
+
+
+
+    
+<section class="share">
+  <h4>Share this post</h4>
+  <a class="icon-twitter" style="font-size: 1.4em" href="https://twitter.com/share?text=My%20notes%20on%20Rails%20performance&nbsp;-&nbsp;Quyet%20Bui&amp;url=http%3a%2f%2fquyetbui.info%2fnote-on-rails-performance%2f"
+      onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+      <span class="hidden">Twitter</span>
+  </a>
+  <a class="icon-facebook" style="font-size: 1.4em" href="https://www.facebook.com/sharer/sharer.php?u=http%3a%2f%2fquyetbui.info%2fnote-on-rails-performance%2f"
+      onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+      <span class="hidden">Facebook</span>
+  </a>
+  <a class="icon-pinterest" style="font-size: 1.4em" href="http://pinterest.com/pin/create/button/?url=http%3a%2f%2fquyetbui.info%2fnote-on-rails-performance%2f&amp;description=My%20notes%20on%20Rails%20performance"
+      onclick="window.open(this.href, 'pinterest-share','width=580,height=296');return false;">
+      <span class="hidden">Pinterest</span>
+  </a>
+  <a class="icon-google-plus" style="font-size: 1.4em" href="https://plus.google.com/share?url=http%3a%2f%2fquyetbui.info%2fnote-on-rails-performance%2f"
+     onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+      <span class="hidden">Google+</span>
+  </a>
+</section>
+
+
+
+    
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+  var disqus_shortname = 'devniemdamme';
+  var disqus_url = 'http:\/\/quyetbui.info\/note-on-rails-performance\/';
+  (function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+
+
+  </footer>
+</article>
+
+</main>
+    <footer class="site-footer clearfix">
+        <section class="copyright"><a href="">Quyet Bui</a> All rights reserved - 2016</section>
+        
+        <section class="poweredby">Proudly generated by <a class="icon-hugo" href="http://gohugo.io">HUGO</a>, with <a class="icon-theme" href="https://github.com/vjeantet/hugo-theme-casper">Casper</a> theme</section>
+        
+    </footer>
+    </div>
+    <script type="text/javascript" src="http://quyetbui.info/js/jquery.js"></script>
+    <script type="text/javascript" src="http://quyetbui.info/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="http://quyetbui.info/js/index.js"></script>
+    
+</body>
+</html>
+
