@@ -192,8 +192,8 @@
 
 <h2 id="db-index">DB index</h2>
 
-<p>Adding index properly will help you querying data much faster. A simple rule is you should add index to all the foreign keys (<code>something_id</code> field) and if you have <code>.where(column_name: ...)</code> then you should add index to <code>column_name</code>&hellip;
-However, it&rsquo;s a trade off, you should understand with indexes, your DB will take more diskspace and also the speed of <code>insert</code> command will be decreased. So, read faster but more disk space + write slower.</p>
+<p>Adding index properly will help you querying data much faster. A simple rule is you should add index to all the foreign keys (<code>something_id</code> field), if you have <code>.where(column_name: ...)</code> or <code>.order(:column_name)</code>&hellip; then you should add index to <code>column_name</code>.
+However, it&rsquo;s a trade off, adding more indexes, your DB will take more diskspace and also the speed of your <code>insert</code> command will be decreased. So, read faster but more disk space + write slower.</p>
 
 <h2 id="memoization">Memoization:</h2>
 

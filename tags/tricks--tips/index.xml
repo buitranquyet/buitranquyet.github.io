@@ -55,8 +55,8 @@
 
 &lt;h2 id=&#34;db-index&#34;&gt;DB index&lt;/h2&gt;
 
-&lt;p&gt;Adding index properly will help you querying data much faster. A simple rule is you should add index to all the foreign keys (&lt;code&gt;something_id&lt;/code&gt; field) and if you have &lt;code&gt;.where(column_name: ...)&lt;/code&gt; then you should add index to &lt;code&gt;column_name&lt;/code&gt;&amp;hellip;
-However, it&amp;rsquo;s a trade off, you should understand with indexes, your DB will take more diskspace and also the speed of &lt;code&gt;insert&lt;/code&gt; command will be decreased. So, read faster but more disk space + write slower.&lt;/p&gt;
+&lt;p&gt;Adding index properly will help you querying data much faster. A simple rule is you should add index to all the foreign keys (&lt;code&gt;something_id&lt;/code&gt; field), if you have &lt;code&gt;.where(column_name: ...)&lt;/code&gt; or &lt;code&gt;.order(:column_name)&lt;/code&gt;&amp;hellip; then you should add index to &lt;code&gt;column_name&lt;/code&gt;.
+However, it&amp;rsquo;s a trade off, adding more indexes, your DB will take more diskspace and also the speed of your &lt;code&gt;insert&lt;/code&gt; command will be decreased. So, read faster but more disk space + write slower.&lt;/p&gt;
 
 &lt;h2 id=&#34;memoization&#34;&gt;Memoization:&lt;/h2&gt;
 
