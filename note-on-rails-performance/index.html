@@ -195,6 +195,10 @@
 <p>Adding index properly will help you querying data much faster. A simple rule is you should add index to all the foreign keys (<code>something_id</code> field), if you have <code>.where(column_name: ...)</code> or <code>.order(:column_name)</code>&hellip; then you should add index to <code>column_name</code>.
 However, it&rsquo;s a trade off, adding more indexes, your DB will take more diskspace and also the speed of your <code>insert</code> command will be decreased. So, read faster but more disk space + write slower.</p>
 
+<h2 id="counter-cache-http-guides-rubyonrails-org-association-basics-html-options-for-belongs-to-counter-cache"><a href="http://guides.rubyonrails.org/association_basics.html#options-for-belongs-to-counter-cache">Counter Cache</a></h2>
+
+<p>Count is one of the slowest commands in SQL, especially when you have lots of records. So when you need to count the number of belonging objects, you should consider using <code>counter-cache</code> instead of count directly. A command like <code>model.things_count</code> should be must faster than <code>model.things.count</code>.</p>
+
 <h2 id="memoization">Memoization:</h2>
 
 <p>If you have a helper method in controller:</p>
