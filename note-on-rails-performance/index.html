@@ -185,10 +185,16 @@
 <p>Explain: the first one will load all the active <code>deals</code> into Rails model and then calculate the sum on the array of Ruby objects, meanwhile in the later SQL do the calculation part and just give the result to Rails</p>
 
 <ul>
-<li>Or another example: <code>Deal.pluck(:user_id).uniq</code> is much slower than <code>Deal.uniq.pluck(:user_id)</code>, although they look very similar.</li>
+<li>Another example: <code>things.pluck(:user_id).uniq</code> is slower than <code>things.uniq.pluck(:user_id)</code>, although they look very similar.</li>
 </ul>
 
-<p>Explain: the first one load all <code>user_id</code> to Ruby array and Ruby do unique in the array. Meanwhile the later, SQL do a <code>SELECT DISTINCT</code> command to find <code>user_id</code>, Ruby just load results into an array.</p>
+<p>Explain: the first one load all <code>user_id</code> to Ruby array and Ruby will make the array unique. Meanwhile the later, SQL do a <code>SELECT DISTINCT</code> command to find <code>user_id</code>, Ruby just load result into an array.</p>
+
+<ul>
+<li>Or <code>things.sort_by(&amp;:title)</code> is usually as not as good as <code>things.order(:title)</code> with <code>title</code> field is indexed in the DB&hellip;
+
+<br /></li>
+</ul>
 
 <h2 id="db-index">DB index</h2>
 
