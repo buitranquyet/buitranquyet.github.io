@@ -42,21 +42,15 @@
 &lt;p&gt;I know that you are a Ruby developer and you can solve the complex issues in a neat way with Ruby. But actually, in a Ruby on Rails app, you should try to do the things in SQL instead of Ruby. SQL is usually faster than Ruby. Bellow is few very simple examples:&lt;/p&gt;
 
 &lt;ul&gt;
-&lt;li&gt;If you want to calculate a sum: &lt;code&gt;Deal.active.sum(&amp;amp;:quantity)&lt;/code&gt; is much slower than &lt;code&gt;Deal.active.sum(:quantity)&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
+&lt;li&gt;&lt;p&gt;If you want to calculate a sum: &lt;code&gt;Deal.active.sum(&amp;amp;:quantity)&lt;/code&gt; is much slower than &lt;code&gt;Deal.active.sum(:quantity)&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;Explain: the first one will load all the active &lt;code&gt;deals&lt;/code&gt; into Rails model and then calculate the sum on the array of Ruby objects, meanwhile in the later SQL do the calculation part and just give the result to Rails&lt;/p&gt;
+&lt;p&gt;Explain: the first one will load all the active &lt;code&gt;deals&lt;/code&gt; into Rails model and then calculate the sum on the array of Ruby objects, meanwhile in the later SQL do the calculation part and just give the result to Rails&lt;/p&gt;&lt;/li&gt;
 
-&lt;ul&gt;
-&lt;li&gt;Another example: &lt;code&gt;things.pluck(:user_id).uniq&lt;/code&gt; is slower than &lt;code&gt;things.uniq.pluck(:user_id)&lt;/code&gt;, although they look very similar.&lt;/li&gt;
-&lt;/ul&gt;
+&lt;li&gt;&lt;p&gt;Another example: &lt;code&gt;things.pluck(:user_id).uniq&lt;/code&gt; is slower than &lt;code&gt;things.uniq.pluck(:user_id)&lt;/code&gt;, although they look very similar.&lt;/p&gt;
 
-&lt;p&gt;Explain: the first one load all &lt;code&gt;user_id&lt;/code&gt; to Ruby array and Ruby will make the array unique. Meanwhile the later, SQL do a &lt;code&gt;SELECT DISTINCT&lt;/code&gt; command to find &lt;code&gt;user_id&lt;/code&gt;, Ruby just load result into an array.&lt;/p&gt;
+&lt;p&gt;Explain: the first one load all &lt;code&gt;user_id&lt;/code&gt; to Ruby array and Ruby will make the array unique. Meanwhile the later, SQL do a &lt;code&gt;SELECT DISTINCT&lt;/code&gt; command to find &lt;code&gt;user_id&lt;/code&gt;, Ruby just load result into an array.&lt;/p&gt;&lt;/li&gt;
 
-&lt;ul&gt;
-&lt;li&gt;Or &lt;code&gt;things.sort_by(&amp;amp;:title)&lt;/code&gt; is usually as not as good as &lt;code&gt;things.order(:title)&lt;/code&gt; with &lt;code&gt;title&lt;/code&gt; field is indexed in the DB&amp;hellip;
-
-&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Or &lt;code&gt;things.sort_by(&amp;amp;:title)&lt;/code&gt; is usually as not as good as &lt;code&gt;things.order(:title)&lt;/code&gt; with &lt;code&gt;title&lt;/code&gt; field is indexed in the DB&amp;hellip;&lt;/p&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h2 id=&#34;db-index&#34;&gt;DB index&lt;/h2&gt;

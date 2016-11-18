@@ -179,21 +179,15 @@
 <p>I know that you are a Ruby developer and you can solve the complex issues in a neat way with Ruby. But actually, in a Ruby on Rails app, you should try to do the things in SQL instead of Ruby. SQL is usually faster than Ruby. Bellow is few very simple examples:</p>
 
 <ul>
-<li>If you want to calculate a sum: <code>Deal.active.sum(&amp;:quantity)</code> is much slower than <code>Deal.active.sum(:quantity)</code></li>
-</ul>
+<li><p>If you want to calculate a sum: <code>Deal.active.sum(&amp;:quantity)</code> is much slower than <code>Deal.active.sum(:quantity)</code></p>
 
-<p>Explain: the first one will load all the active <code>deals</code> into Rails model and then calculate the sum on the array of Ruby objects, meanwhile in the later SQL do the calculation part and just give the result to Rails</p>
+<p>Explain: the first one will load all the active <code>deals</code> into Rails model and then calculate the sum on the array of Ruby objects, meanwhile in the later SQL do the calculation part and just give the result to Rails</p></li>
 
-<ul>
-<li>Another example: <code>things.pluck(:user_id).uniq</code> is slower than <code>things.uniq.pluck(:user_id)</code>, although they look very similar.</li>
-</ul>
+<li><p>Another example: <code>things.pluck(:user_id).uniq</code> is slower than <code>things.uniq.pluck(:user_id)</code>, although they look very similar.</p>
 
-<p>Explain: the first one load all <code>user_id</code> to Ruby array and Ruby will make the array unique. Meanwhile the later, SQL do a <code>SELECT DISTINCT</code> command to find <code>user_id</code>, Ruby just load result into an array.</p>
+<p>Explain: the first one load all <code>user_id</code> to Ruby array and Ruby will make the array unique. Meanwhile the later, SQL do a <code>SELECT DISTINCT</code> command to find <code>user_id</code>, Ruby just load result into an array.</p></li>
 
-<ul>
-<li>Or <code>things.sort_by(&amp;:title)</code> is usually as not as good as <code>things.order(:title)</code> with <code>title</code> field is indexed in the DB&hellip;
-
-<br /></li>
+<li><p>Or <code>things.sort_by(&amp;:title)</code> is usually as not as good as <code>things.order(:title)</code> with <code>title</code> field is indexed in the DB&hellip;</p></li>
 </ul>
 
 <h2 id="db-index">DB index</h2>
