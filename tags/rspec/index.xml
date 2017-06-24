@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Quyet Bui</title>
+    <link>http://quyetbui.info/tags/rspec/index.xml</link>
+    <description>Recent content on Quyet Bui</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-US</language>
+    <copyright>All rights reserved - 2016</copyright>
+    <atom:link href="http://quyetbui.info/tags/rspec/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>How to use chrome headless with capybara locally and with Travis CI</title>
+      <link>http://quyetbui.info/chrome-headless-capybara-on-travis-ci/</link>
+      <pubDate>Sat, 24 Jun 2017 21:08:54 +0700</pubDate>
+      
+      <guid>http://quyetbui.info/chrome-headless-capybara-on-travis-ci/</guid>
+      <description>&lt;p&gt;In projects that I worked on, we usually &lt;code&gt;capybara-webkit&lt;/code&gt; or &lt;code&gt;phantomjs&lt;/code&gt; (with gem &lt;code&gt;poltergeist&lt;/code&gt; as driver). Capybara-webkit works fine but there are lots of dependencies (Qt related stuffs), so it&amp;rsquo;s usually harder for setup CI and at a new development computer. Phantomjs on the other hand is easier to setup but not quite stable as sometimes there is random error. Recently, when &lt;a href=&#34;https://developers.google.com/web/updates/2017/04/headless-chrome&#34;&gt;chrome 59 released with headless feature&lt;/a&gt;, I believe chrome is faster and more stable so I am very interested in trying it our for feature tests of a new project. &lt;/p&gt;
+
+&lt;h3 id=&#34;local-setup-development-enviroment&#34;&gt;Local setup/development enviroment.&lt;/h3&gt;
+
+&lt;h4 id=&#34;preparation&#34;&gt;Preparation&lt;/h4&gt;
+
+&lt;p&gt;Make sure that you updated &lt;code&gt;chrome&lt;/code&gt; to latest version. And also this feature isn&amp;rsquo;t released yet for Chrome on Window yet. So only Mac/Linux&lt;/p&gt;
+
+&lt;h4 id=&#34;chromedriver&#34;&gt;Chromedriver&lt;/h4&gt;
+
+&lt;p&gt;Install &lt;code&gt;chromedriver&lt;/code&gt;. There are two ways to do this. We can either just install the driver manually, running &lt;code&gt;brew install chromedriver&lt;/code&gt; on macOS with homebrew or &lt;code&gt;apt-get install chromium-chromedriver&lt;/code&gt; on Linux (Ubuntu). Or we can use a gem called &lt;code&gt;chromedriver-helper&lt;/code&gt;, this is my prefered method as it packed the &lt;code&gt;chromedriver&lt;/code&gt; inside the gem. My &lt;code&gt;Gemfile&lt;/code&gt; look like&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-ruby&#34;&gt;  gem &#39;capybara&#39;
+  gem &#39;chromedriver-helper&#39;
+  gem &#39;selenium-webdriver&#39;
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4 id=&#34;rspec-setup&#34;&gt;RSpec setup&lt;/h4&gt;
+
+&lt;p&gt;Now we will use the chrome headless for the RSpec feature test. Just add to &lt;code&gt;rails_helper.rb&lt;/code&gt; (or &lt;code&gt;spec_helper.rb&lt;/code&gt;)&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-ruby&#34;&gt;capabilities = Selenium::WebDriver::Remote::Capabilities.chrome(
+  &#39;chromeOptions&#39; =&amp;gt; {
+    &#39;args&#39; =&amp;gt; [&#39;--headless&#39;, &#39;--disable-gpu&#39;]
+  }
+)
+
+Capybara.register_driver :chrome do |app|
+  Capybara::Selenium::Driver.new(app, browser: :chrome, desired_capabilities: capabilities)
+end
+
+Capybara.javascript_driver = :chrome
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Ok, we are done, the features tests is now running in chrome headless :)&lt;/p&gt;
+
+&lt;h3 id=&#34;travis-ci-setup&#34;&gt;Travis CI setup&lt;/h3&gt;
+
+&lt;p&gt;We use Travis CI for continuous integration, when code pushed to github, tests will be run in Travis CI so we need to setup also in Travis. As I mentioned above, the &lt;code&gt;chromedriver-helper&lt;/code&gt; already packed the &lt;code&gt;chromedriver&lt;/code&gt; in the gem, so we don&amp;rsquo;t need to install it anymore, we just need to install Chrome. Initally, I just use apt addon of Travis CI for installing latest chrome in &lt;code&gt;.travis.yml&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-YAML&#34;&gt;addons:
+  apt:
+    sources:
+      - google-chrome
+    packages:
+      - google-chrome-stable
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;but recently, my colleague just suggested a shorter/simpler version:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-YAML&#34;&gt;addons:
+  chrome: stable
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now the feature tests can run in Travis CI with Chrome headless. However, when we added more tests, there are some tests (with key/input interaction) passing locally but failing in Travis CI. Turned out, it&amp;rsquo;s a chrome&amp;rsquo;s &lt;a href=&#34;https://bugs.chromium.org/p/chromedriver/issues/detail?id=1772&#34;&gt;bug&lt;/a&gt;. And to fix this, we need to use &lt;code&gt;xvfb&lt;/code&gt; (by adding to &lt;code&gt;.travis.yml&lt;/code&gt;):&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;before_script:
+  - export DISPLAY=:99.0 &amp;amp;&amp;amp; sh -e /etc/init.d/xvfb start &amp;amp;&amp;amp; sleep 3
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Finally, the feature tests are running with Chrome headless smoothly both in Travis CI and locally.&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>
